@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Auteur;
 use App\Repository\AuteurRepository;
+use App\Repository\NationaliteRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\HttpFoundation\Response;
@@ -52,15 +53,19 @@ class ApiAuteurController extends AbstractController
     /**
     * @Route("/api/auteurs", name="api_auteurs_create", methods={"POST"})
     */
-    public function create(Request $request, ObjectManager $manager, ValidatorInterface $validator, SerializerInterface $serializer)
+    public function create(Request $request, ObjectManager $manager, NationaliteRepository $repoNation, ValidatorInterface $validator, SerializerInterface $serializer)
     {
         // Je récupère les éléments de ma request
         $data = $request->getContent();
-        // $auteur = new auteur();
-        // $serializer->deserialize($data, auteur::class, 'json', ['object_to_populate' => $auteur]);
+        $dataTab = $serializer->decode($data, 'json');
+        $auteur = new Auteur();
+        $nationalite = $repoNation->find($dataTab['nationalite']['id']);
         
         // Je déserialise les datas en objet de type auteur
-        $auteur = $serializer->deserialize($data, Auteur::class, 'json');
+        $serializer->deserialize($data, Auteur::class, 'json', ['object_to_populate' => $auteur]);
+        
+        // Jaffecte à l'auteur la bonne nationalité récupérée plus haut
+        $auteur->setNationalite($nationalite);
 
         // Gestion des erreurs et validation
         $errors = $validator->validate($auteur);
@@ -90,15 +95,20 @@ class ApiAuteurController extends AbstractController
     /**
     * @Route("/api/auteurs/{id}", name="api_auteurs_update", methods={"PUT"})
     */
-    public function edit(Auteur $auteur, Request $request, ObjectManager $manager, ValidatorInterface $validator, SerializerInterface $serializer)
+    public function edit(Auteur $auteur, NationaliteRepository $repoNation, Request $request, ObjectManager $manager, ValidatorInterface $validator, SerializerInterface $serializer)
     {
         $data = $request->getContent();
+        $dataTab = $serializer->decode($data, 'json');
+        $nationalite = $repoNation->find($dataTab['nationalite']['id']);
+        
+        // Solution 1
         $serializer->deserialize(
             $data,
             Auteur::class,
             'json',
             ['object_to_populate' => $auteur]
-        );
+         );
+        $auteur->setNationalite($nationalite);
 
         // Gestion des erreurs et validation
         $errors = $validator->validate($auteur);
