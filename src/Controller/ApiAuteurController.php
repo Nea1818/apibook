@@ -2,8 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\Genre;
-use App\Repository\GenreRepository;
+use App\Entity\Auteur;
+use App\Repository\AuteurRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,19 +14,19 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-class ApiGenreController extends AbstractController
+class ApiAuteurController extends AbstractController
 {
     /**
-     * @Route("/api/genres", name="api_genres", methods={"GET"})
+     * @Route("/api/auteurs", name="api_auteurs", methods={"GET"})
      */
-    public function list(GenreRepository $repo, SerializerInterface $serializer)
+    public function list(AuteurRepository $repo, SerializerInterface $serializer)
     {
-        $genres = $repo->findAll();
+        $auteurs = $repo->findAll();
         $resultat = $serializer->serialize(
-            $genres,
+            $auteurs,
             'json',
             [
-                'groups' => ['listGenreFull']
+                'groups' => ['listAuteurFull']
             ]
         );
         
@@ -34,15 +34,15 @@ class ApiGenreController extends AbstractController
     }
 
     /**
-    * @Route("/api/genres/{id}", name="api_genres_show", methods={"GET"})
+    * @Route("/api/auteurs/{id}", name="api_auteurs_show", methods={"GET"})
     */
-    public function show(Genre $genre, SerializerInterface $serializer)
+    public function show(Auteur $auteur, SerializerInterface $serializer)
     {
         $resultat = $serializer->serialize(
-            $genre,
+            $auteur,
             'json',
             [
-                'groups' => ['listGenreSimple']
+                'groups' => ['listAuteurSimple']
             ]
         );
         
@@ -50,20 +50,20 @@ class ApiGenreController extends AbstractController
     }
 
     /**
-    * @Route("/api/genres", name="api_genres_create", methods={"POST"})
+    * @Route("/api/auteurs", name="api_auteurs_create", methods={"POST"})
     */
     public function create(Request $request, ObjectManager $manager, ValidatorInterface $validator, SerializerInterface $serializer)
     {
         // Je récupère les éléments de ma request
         $data = $request->getContent();
-        // $genre = new Genre();
-        // $serializer->deserialize($data, Genre::class, 'json', ['object_to_populate' => $genre]);
+        // $auteur = new auteur();
+        // $serializer->deserialize($data, auteur::class, 'json', ['object_to_populate' => $auteur]);
         
-        // Je déserialise les datas en objet de type Genre
-        $genre = $serializer->deserialize($data, Genre::class, 'json');
+        // Je déserialise les datas en objet de type auteur
+        $auteur = $serializer->deserialize($data, Auteur::class, 'json');
 
         // Gestion des erreurs et validation
-        $errors = $validator->validate($genre);
+        $errors = $validator->validate($auteur);
         // S'il y en a je les serialise et les renvoie
         if (count($errors)) {
             $errorsJson = $serializer->serialize($errors, 'json');
@@ -71,16 +71,16 @@ class ApiGenreController extends AbstractController
         }
 
         // Je persist et flush en bdd
-        $manager->persist($genre);
+        $manager->persist($auteur);
         $manager->flush();
         
-        // Je ne renvoie rien dans le body à part le code statut et un lien pour rejoindre le nouveau genre
+        // Je ne renvoie rien dans le body à part le code statut et un lien pour rejoindre le nouveau auteur
         return new JsonResponse(
-            "Le genre a bien été crée",
+            "L'auteur a bien été crée",
             Response::HTTP_CREATED,
             ["location" => $this->generateUrl(
-                'api_genres_show',
-                ["id" => $genre->getId()],
+                'api_auteurs_show',
+                ["id" => $auteur->getId()],
                 UrlGeneratorInterface::ABSOLUTE_URL
             )],
             true
@@ -88,20 +88,20 @@ class ApiGenreController extends AbstractController
     }
 
     /**
-    * @Route("/api/genres/{id}", name="api_genres_update", methods={"PUT"})
+    * @Route("/api/auteurs/{id}", name="api_auteurs_update", methods={"PUT"})
     */
-    public function edit(Genre $genre, Request $request, ObjectManager $manager, ValidatorInterface $validator, SerializerInterface $serializer)
+    public function edit(Auteur $auteur, Request $request, ObjectManager $manager, ValidatorInterface $validator, SerializerInterface $serializer)
     {
         $data = $request->getContent();
         $serializer->deserialize(
             $data,
-            Genre::class,
+            Auteur::class,
             'json',
-            ['object_to_populate' => $genre]
+            ['object_to_populate' => $auteur]
         );
 
         // Gestion des erreurs et validation
-        $errors = $validator->validate($genre);
+        $errors = $validator->validate($auteur);
         // S'il y en a je les serialise et les renvoie
         if (count($errors)) {
             $errorsJson = $serializer->serialize($errors, 'json');
@@ -109,21 +109,21 @@ class ApiGenreController extends AbstractController
         }
 
         // Je persist et flush en bdd
-        $manager->persist($genre);
+        $manager->persist($auteur);
         $manager->flush();
 
-        return new JsonResponse("Le genre a bien été modifié", Response::HTTP_OK, [], true);
+        return new JsonResponse("L'auteur a bien été modifié", Response::HTTP_OK, [], true);
     }
 
     /**
-    * @Route("/api/genres/{id}", name="api_genres_delete", methods={"DELETE"})
+    * @Route("/api/auteurs/{id}", name="api_auteurs_delete", methods={"DELETE"})
     */
-    public function delete(Genre $genre, ObjectManager $manager)
+    public function delete(Auteur $auteur, ObjectManager $manager)
     {
         // Je persist et flush en bdd
-        $manager->remove($genre);
+        $manager->remove($auteur);
         $manager->flush();
 
-        return new JsonResponse("Le genre a bien été supprimé", Response::HTTP_OK, []);
+        return new JsonResponse("L'auteur a bien été supprimé", Response::HTTP_OK, []);
     }
 }
