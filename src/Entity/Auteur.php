@@ -2,9 +2,10 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\AuteurRepository")
@@ -20,17 +21,20 @@ class Auteur
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"listGenreFull"})
      */
     private $nom;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"listGenreFull"})
      */
     private $prenom;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Nationalite", inversedBy="auteurs")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"listGenreFull"})
      */
     private $nationalite;
 
