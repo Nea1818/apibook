@@ -4,13 +4,31 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\GenreRepository")
+ * @ApiResource(
+ *       itemOperations={
+ *           "get_simple" = {
+ *                "method"= "GET",
+ *                 "path"="/genres/{id}/simple",
+ *                 "normalization_context"={"groups"={"listeGenreSimple"}}
+ *                      },
+ *            "get_full" = {
+ *                "method"= "GET",
+ *                 "path"="/genres/{id}/full",
+ *                 "normalization_context"={"groups"={"listeGenreFull"}}
+ *                      }
+ * },
+ *        collectionOperations={"get"}
+ *
+ * )
  * @UniqueEntity(
  * fields={"libelle"},
  *     message="Ce libellé existe déjà.")
@@ -39,6 +57,7 @@ class Genre
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Livre", mappedBy="genre")
      * @Groups({"listGenreFull"})
+     * @ApiSubresource
      */
     private $livres;
 

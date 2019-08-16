@@ -5,11 +5,13 @@ namespace App\Entity;
 use App\Entity\Auteur;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\NationaliteRepository")
+ * @ApiResource()
  */
 class Nationalite
 {
